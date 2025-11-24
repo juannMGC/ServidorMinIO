@@ -11,8 +11,8 @@ services:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD: 12345678
     command: server /data --console-address ":9001"
-    #volumes:
-    #  - minio_data:/data
+    volumes:
+      - minio_data:/data
 
   server:
     build: .
@@ -27,5 +27,5 @@ services:
     depends_on:
       - minio
 
-#volumes:
-#  minio_data:
+volumes:
+  minio_data:
