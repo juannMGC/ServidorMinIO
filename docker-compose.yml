@@ -11,3 +11,21 @@ services:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD: 12345678
     command: server /data --console-address ":9001"
+    #volumes:
+    #  - minio_data:/data
+
+  server:
+    build: .
+    container_name: file_server
+    ports:
+      - "3000:3000"
+    environment:
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: 12345678
+    depends_on:
+      - minio
+
+#volumes:
+#  minio_data:
