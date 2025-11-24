@@ -46,4 +46,47 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     }
 });
 
+// --- Download endpoint ---
+app.get("/download/:fileName", async (req, res) => {
+    const fileName = req.params.fileName;
+
+    try {
+        // Obtener el archivo como stream desde MinIO
+        minioClient.getObject(BUCKET, fileName, (err, dataStream) => {
+            if (err) {
+                console.error(err);
+                return res.status(404).json({ error: "Archivo no encontrado" });
+            }
+
+            res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+            // Enviar el archivo al cliente
+            dataStream.pipe(res);
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error al descargar archivo" });
+    }
+});
+
+// --- Delete endpoint ---
+app.delete("/delete/:fileName", async (req, res) => {
+    const fileName = req.params.fileName;
+
+    try {
+        await minioClient.removeObject(BUCKET, fileName);
+
+        res.json({
+            message: "Archivo eliminado correctamente",
+            fileName
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "No se pudo eliminar el archivo" });
+    }
+});
+
+
 app.listen(3000, () => console.log("Servidor Express listo en puerto 3000"));
